@@ -19,53 +19,78 @@ export const AmazonProvider = ({ children }) => {
   const [recentTransactions, setRecentTransactions] = useState([])
   const [ownedItems, setOwnedItems] = useState([])
 
-  const {
-    authenticate,
-    isAuthenticated,
-    enableWeb3,
-    Moralis,
-    user,
-    isWeb3Enabled,
-  } = useMoralis()
+  // Check if we're in a Moralis context
+  let moralisHooks = null
+  try {
+    moralisHooks = useMoralis()
+  } catch (error) {
+    console.warn('Moralis not available, running in demo mode')
+  }
 
   const {
-    data: userData,
-    error: userDataError,
-    isLoading: userDataIsLoading,
-  } = useMoralisQuery('_User')
+    authenticate = () => console.log('Demo: authenticate called'),
+    isAuthenticated = false,
+    enableWeb3 = () => console.log('Demo: enableWeb3 called'),
+    Moralis = null,
+    user = null,
+    isWeb3Enabled = false,
+  } = moralisHooks || {}
+
+  // Handle Moralis queries with fallbacks
+  let userQuery = null
+  let assetsQuery = null
+
+  try {
+    userQuery = useMoralisQuery('_User')
+    assetsQuery = useMoralisQuery('Assets')
+  } catch (error) {
+    console.warn('Moralis queries not available, using demo data')
+  }
 
   const {
-    data: assetsData,
-    error: assetsDataError,
-    isLoading: assetsDataIsLoading,
-  } = useMoralisQuery('Assets')
+    data: userData = [],
+    error: userDataError = null,
+    isLoading: userDataIsLoading = false,
+  } = userQuery || {}
 
-  useEffect(async () => {
-    console.log(assetsData)
-    await enableWeb3()
-    await getAssets()
-    await getOwnedAssets()
+  const {
+    data: assetsData = [],
+    error: assetsDataError = null,
+    isLoading: assetsDataIsLoading = false,
+  } = assetsQuery || {}
+
+  useEffect(() => {
+    const initializeData = async () => {
+      console.log(assetsData)
+      await enableWeb3()
+      await getAssets()
+      await getOwnedAssets()
+    }
+    initializeData()
   }, [userData, assetsData, assetsDataIsLoading, userDataIsLoading])
 
-  useEffect(async () => {
-    if (!isWeb3Enabled) {
-      await enableWeb3()
-    }
-    await listenToUpdates()
+  useEffect(() => {
+    const initializeWeb3 = async () => {
+      if (!isWeb3Enabled) {
+        await enableWeb3()
+      }
+      await listenToUpdates()
 
-    if (isAuthenticated) {
-      await getBalance()
-      const currentUsername = await user?.get('nickname')
-      setUsername(currentUsername)
-      const account = await user?.get('ethAddress')
-      setCurrentAccount(account)
-      const formatAccount = account.slice(0, 5) + '...' + account.slice(-5)
-      setFormattedAccount(formatAccount)
-    } else {
-      setCurrentAccount('')
-      setFormattedAccount('')
-      setBalance('')
+      if (isAuthenticated) {
+        await getBalance()
+        const currentUsername = await user?.get('nickname')
+        setUsername(currentUsername)
+        const account = await user?.get('ethAddress')
+        setCurrentAccount(account)
+        const formatAccount = account.slice(0, 5) + '...' + account.slice(-5)
+        setFormattedAccount(formatAccount)
+      } else {
+        setCurrentAccount('')
+        setFormattedAccount('')
+        setBalance('')
+      }
     }
+    initializeWeb3()
   }, [
     isWeb3Enabled,
     isAuthenticated,
