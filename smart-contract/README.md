@@ -59,7 +59,9 @@ smart-contract/
 └── docs/
     ├── README.md                   # This file
     ├── SECURITY.md                 # Security considerations
-    └── API.md                      # API documentation
+    ├── API.md                      # API documentation
+    ├── HEDERA.md                   # Hedera deployment guide
+    └── WALLET-SETUP.md             # Wallet configuration guide
 ```
 
 ## 🚀 Quick Start
@@ -89,6 +91,11 @@ smart-contract/
    # Edit .env with your configuration
    ```
 
+   **Important**: Configure separate private keys for different network types:
+   - `EVM_PRIVATE_KEY` for Ethereum, Polygon, BSC, Arbitrum, Optimism
+   - `HEDERA_PRIVATE_KEY` for Hedera networks (mainnet, testnet, previewnet)
+   - `PRIVATE_KEY` as fallback for EVM networks (legacy support)
+
 4. **Compile contracts**
    ```bash
    npm run compile
@@ -106,25 +113,61 @@ smart-contract/
 Copy `.env.example` to `.env` and configure:
 
 ```env
-# Required for deployment
-PRIVATE_KEY=your_private_key_here
+# Private Keys (use separate keys for security)
+EVM_PRIVATE_KEY=your_evm_private_key_here          # For Ethereum, Polygon, BSC, etc.
+HEDERA_PRIVATE_KEY=your_hedera_private_key_here    # For Hedera networks
+PRIVATE_KEY=your_private_key_here                  # Legacy fallback
+
+# RPC URLs
 MAINNET_RPC_URL=https://mainnet.infura.io/v3/YOUR_INFURA_KEY
 GOERLI_RPC_URL=https://goerli.infura.io/v3/YOUR_INFURA_KEY
+HEDERA_RPC_URL=https://mainnet.hashio.io/api
+HEDERA_TESTNET_RPC_URL=https://testnet.hashio.io/api
 
-# Required for verification
+# API Keys for verification
 ETHERSCAN_API_KEY=your_etherscan_api_key
 POLYGONSCAN_API_KEY=your_polygonscan_api_key
+HEDERA_API_KEY=your_hedera_api_key
 
 # Optional
 GAS_PRICE=10
 VERIFY_CONTRACTS=true
 ```
 
+### Wallet Configuration
+
+The project supports separate private keys for different network types for enhanced security:
+
+#### Private Key Types
+- **EVM_PRIVATE_KEY**: Used for all EVM-compatible networks (Ethereum, Polygon, BSC, Arbitrum, Optimism)
+- **HEDERA_PRIVATE_KEY**: Used for all Hedera networks (mainnet, testnet, previewnet)
+- **PRIVATE_KEY**: Legacy fallback for EVM networks (backward compatibility)
+
+#### Validation Commands
+```bash
+# Check wallet configuration status
+npm run wallet-status
+
+# Validate private key for specific network
+npm run validate-network -- --network goerli
+npm run validate-network -- --network hederaTestnet
+
+# Run full deployment validation
+npm run validate
+```
+
+#### Security Best Practices
+1. **Use separate wallets** for different network types
+2. **Never commit private keys** to version control
+3. **Use hardware wallets** for mainnet deployments
+4. **Keep testnet and mainnet keys separate**
+5. **Regularly rotate private keys**
+
 ### Network Configuration
 
 Supported networks:
-- **Mainnets**: Ethereum, Polygon, BSC, Arbitrum, Optimism
-- **Testnets**: Goerli, Sepolia, Mumbai, BSC Testnet
+- **Mainnets**: Ethereum, Polygon, BSC, Arbitrum, Optimism, Hedera
+- **Testnets**: Goerli, Sepolia, Mumbai, BSC Testnet, Hedera Testnet, Hedera Previewnet
 - **Local**: Hardhat Network
 
 ## 📦 Deployment
@@ -153,9 +196,40 @@ Supported networks:
    npm run deploy:sepolia
    ```
 
-3. **Verify contract**
+3. **Deploy to Hedera Testnet**
+   ```bash
+   npm run deploy:hedera-testnet
+   ```
+
+4. **Verify contract**
    ```bash
    npm run verify:goerli
+   npm run verify:hedera-testnet
+   ```
+
+### Hedera Network Deployment
+
+Hedera offers unique advantages with its hashgraph consensus and high throughput:
+
+1. **Deploy to Hedera Testnet**
+   ```bash
+   npm run deploy:hedera-testnet
+   ```
+
+2. **Deploy to Hedera Previewnet**
+   ```bash
+   npm run deploy:hedera-previewnet
+   ```
+
+3. **Deploy to Hedera Mainnet**
+   ```bash
+   npm run deploy:hedera
+   ```
+
+4. **Interact with Hedera deployment**
+   ```bash
+   npm run hedera:interact          # Testnet
+   npm run hedera:interact-mainnet  # Mainnet
    ```
 
 ### Mainnet Deployment
@@ -163,11 +237,13 @@ Supported networks:
 1. **Deploy to mainnet**
    ```bash
    npm run deploy:mainnet
+   npm run deploy:hedera  # For Hedera mainnet
    ```
 
 2. **Verify contract**
    ```bash
    npm run verify:mainnet
+   npm run verify:hedera  # For Hedera mainnet
    ```
 
 ## 🧪 Testing
@@ -257,6 +333,10 @@ Get the current exchange rate in wei per token.
 
 For complete API documentation, see [API.md](docs/API.md).
 
+For Hedera-specific deployment and interaction guide, see [HEDERA.md](docs/HEDERA.md).
+
+For detailed wallet configuration and private key setup, see [WALLET-SETUP.md](docs/WALLET-SETUP.md).
+
 ## 🛠️ Development
 
 ### Available Scripts
@@ -276,10 +356,14 @@ npm run test:gas        # Run with gas reporting
 # Deployment
 npm run deploy:local    # Deploy to local network
 npm run deploy:goerli   # Deploy to Goerli testnet
+npm run deploy:hedera-testnet   # Deploy to Hedera testnet
+npm run deploy:hedera   # Deploy to Hedera mainnet
 npm run deploy:mainnet  # Deploy to mainnet
 
 # Verification
 npm run verify:goerli   # Verify on Goerli
+npm run verify:hedera-testnet   # Verify on Hedera testnet
+npm run verify:hedera   # Verify on Hedera mainnet
 npm run verify:mainnet  # Verify on mainnet
 
 # Code Quality

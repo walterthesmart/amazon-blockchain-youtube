@@ -49,6 +49,27 @@ const NETWORK_CONFIG = {
     gasLimit: 8000000,
     confirmations: 1,
   },
+  // Hedera Mainnet
+  295: {
+    name: "hedera",
+    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasLimit: 8000000,
+    confirmations: 1,
+  },
+  // Hedera Testnet
+  296: {
+    name: "hederaTestnet",
+    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasLimit: 8000000,
+    confirmations: 1,
+  },
+  // Hedera Previewnet
+  297: {
+    name: "hederaPreviewnet",
+    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasLimit: 8000000,
+    confirmations: 1,
+  },
   // Local Hardhat Network
   31337: {
     name: "hardhat",

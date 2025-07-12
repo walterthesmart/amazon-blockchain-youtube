@@ -2,6 +2,7 @@ require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
 const { networks } = require("./config/networks");
+const { validatePrivateKeyConfig, displayWalletStatus } = require("./config/wallet-config");
 
 // Custom tasks
 task("accounts", "Prints the list of accounts", async (_, hre) => {
@@ -43,6 +44,23 @@ task("contract-info", "Get contract information")
     console.log("Minting Enabled:", await contract.mintingEnabled());
     console.log("Owner:", await contract.owner());
     console.log("Paused:", await contract.paused());
+  });
+
+task("wallet-status", "Display wallet configuration status")
+  .setAction(async () => {
+    displayWalletStatus();
+  });
+
+task("validate-network", "Validate private key configuration for a network")
+  .addParam("network", "Network name to validate")
+  .setAction(async (taskArgs) => {
+    const isValid = validatePrivateKeyConfig(taskArgs.network);
+    if (isValid) {
+      console.log(`✅ Private key configuration is valid for network: ${taskArgs.network}`);
+    } else {
+      console.log(`❌ Private key configuration is invalid for network: ${taskArgs.network}`);
+      process.exit(1);
+    }
   });
 
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -89,7 +107,36 @@ module.exports = {
       bscTestnet: process.env.BSCSCAN_API_KEY,
       arbitrumOne: process.env.ARBISCAN_API_KEY,
       optimisticEthereum: process.env.OPTIMISM_API_KEY,
+      hedera: process.env.HEDERA_API_KEY,
+      hederaTestnet: process.env.HEDERA_API_KEY,
+      hederaPreviewnet: process.env.HEDERA_API_KEY,
     },
+    customChains: [
+      {
+        network: "hedera",
+        chainId: 295,
+        urls: {
+          apiURL: "https://server-verify.hashscan.io",
+          browserURL: "https://hashscan.io/mainnet"
+        }
+      },
+      {
+        network: "hederaTestnet",
+        chainId: 296,
+        urls: {
+          apiURL: "https://server-verify.hashscan.io",
+          browserURL: "https://hashscan.io/testnet"
+        }
+      },
+      {
+        network: "hederaPreviewnet",
+        chainId: 297,
+        urls: {
+          apiURL: "https://server-verify.hashscan.io",
+          browserURL: "https://hashscan.io/previewnet"
+        }
+      }
+    ]
   },
 
   gasReporter: {

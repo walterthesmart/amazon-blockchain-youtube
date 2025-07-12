@@ -53,6 +53,17 @@ const NETWORK_CONFIGS = {
     confirmations: 1,
   },
 
+  // Hedera Networks
+  hedera: {
+    name: "Hedera Mainnet",
+    chainId: 295,
+    currency: "HBAR",
+    explorerUrl: "https://hashscan.io/mainnet",
+    isTestnet: false,
+    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    confirmations: 1,
+  },
+
   // Testnets
   goerli: {
     name: "Goerli Testnet",
@@ -86,6 +97,25 @@ const NETWORK_CONFIGS = {
     chainId: 97,
     currency: "tBNB",
     explorerUrl: "https://testnet.bscscan.com",
+    isTestnet: true,
+    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    confirmations: 1,
+  },
+
+  hederaTestnet: {
+    name: "Hedera Testnet",
+    chainId: 296,
+    currency: "HBAR",
+    explorerUrl: "https://hashscan.io/testnet",
+    isTestnet: true,
+    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    confirmations: 1,
+  },
+  hederaPreviewnet: {
+    name: "Hedera Previewnet",
+    chainId: 297,
+    currency: "HBAR",
+    explorerUrl: "https://hashscan.io/previewnet",
     isTestnet: true,
     gasPrice: ethers.utils.parseUnits("10", "gwei"),
     confirmations: 1,

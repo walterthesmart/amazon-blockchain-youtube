@@ -1,11 +1,16 @@
 const { ethers, network, run } = require("hardhat");
 const { getNetworkConfig, isTestnet } = require("../../config/networks");
 const { TOKEN_CONFIG, DEPLOYMENT_CONFIG } = require("../../config/constants");
+const { validateAndExit } = require("../utils/validate-deployment");
 
 /**
  * Deploy AmazonCoin contract with comprehensive logging and verification
  */
 async function main() {
+  // Pre-deployment validation
+  console.log("🔍 Running pre-deployment validation...");
+  await validateAndExit();
+
   console.log("🚀 Starting AmazonCoin deployment...");
   console.log("📡 Network:", network.name);
   console.log("⛽ Chain ID:", network.config.chainId);

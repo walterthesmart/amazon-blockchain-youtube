@@ -1,6 +1,7 @@
 // Network configuration for different blockchain networks
 
 require('dotenv').config();
+const { getAccountsForNetwork } = require('./wallet-config');
 
 const networks = {
   // Local development network
@@ -20,7 +21,7 @@ const networks = {
     chainId: 1,
     gas: 8000000,
     gasPrice: 20000000000, // 20 gwei
-    accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+    accounts: getAccountsForNetwork('mainnet'),
     confirmations: 2,
     timeoutBlocks: 200,
     skipDryRun: false,
@@ -32,7 +33,7 @@ const networks = {
     chainId: 5,
     gas: 8000000,
     gasPrice: 10000000000, // 10 gwei
-    accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+    accounts: getAccountsForNetwork('goerli'),
     confirmations: 1,
     timeoutBlocks: 200,
     skipDryRun: true,
@@ -44,7 +45,7 @@ const networks = {
     chainId: 11155111,
     gas: 8000000,
     gasPrice: 10000000000, // 10 gwei
-    accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+    accounts: getAccountsForNetwork('sepolia'),
     confirmations: 1,
     timeoutBlocks: 200,
     skipDryRun: true,
@@ -56,7 +57,7 @@ const networks = {
     chainId: 137,
     gas: 8000000,
     gasPrice: 30000000000, // 30 gwei
-    accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+    accounts: getAccountsForNetwork('polygon'),
     confirmations: 2,
     timeoutBlocks: 200,
     skipDryRun: false,
@@ -68,7 +69,7 @@ const networks = {
     chainId: 80001,
     gas: 8000000,
     gasPrice: 10000000000, // 10 gwei
-    accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+    accounts: getAccountsForNetwork('mumbai'),
     confirmations: 1,
     timeoutBlocks: 200,
     skipDryRun: true,
@@ -80,7 +81,7 @@ const networks = {
     chainId: 56,
     gas: 8000000,
     gasPrice: 5000000000, // 5 gwei
-    accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+    accounts: getAccountsForNetwork('bsc'),
     confirmations: 2,
     timeoutBlocks: 200,
     skipDryRun: false,
@@ -92,7 +93,7 @@ const networks = {
     chainId: 97,
     gas: 8000000,
     gasPrice: 10000000000, // 10 gwei
-    accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+    accounts: getAccountsForNetwork('bscTestnet'),
     confirmations: 1,
     timeoutBlocks: 200,
     skipDryRun: true,
@@ -104,7 +105,7 @@ const networks = {
     chainId: 42161,
     gas: 8000000,
     gasPrice: 1000000000, // 1 gwei
-    accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+    accounts: getAccountsForNetwork('arbitrum'),
     confirmations: 1,
     timeoutBlocks: 200,
     skipDryRun: false,
@@ -116,10 +117,46 @@ const networks = {
     chainId: 10,
     gas: 8000000,
     gasPrice: 1000000000, // 1 gwei
-    accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+    accounts: getAccountsForNetwork('optimism'),
     confirmations: 1,
     timeoutBlocks: 200,
     skipDryRun: false,
+  },
+
+  // Hedera Mainnet
+  hedera: {
+    url: process.env.HEDERA_RPC_URL || "https://mainnet.hashio.io/api",
+    chainId: 295,
+    gas: 8000000,
+    gasPrice: 10000000000, // 10 gwei (Hedera uses higher gas prices)
+    accounts: getAccountsForNetwork('hedera'),
+    confirmations: 1,
+    timeoutBlocks: 200,
+    skipDryRun: false,
+  },
+
+  // Hedera Testnet
+  hederaTestnet: {
+    url: process.env.HEDERA_TESTNET_RPC_URL || "https://testnet.hashio.io/api",
+    chainId: 296,
+    gas: 8000000,
+    gasPrice: 10000000000, // 10 gwei
+    accounts: getAccountsForNetwork('hederaTestnet'),
+    confirmations: 1,
+    timeoutBlocks: 200,
+    skipDryRun: true,
+  },
+
+  // Hedera Previewnet
+  hederaPreviewnet: {
+    url: process.env.HEDERA_PREVIEWNET_RPC_URL || "https://previewnet.hashio.io/api",
+    chainId: 297,
+    gas: 8000000,
+    gasPrice: 10000000000, // 10 gwei
+    accounts: getAccountsForNetwork('hederaPreviewnet'),
+    confirmations: 1,
+    timeoutBlocks: 200,
+    skipDryRun: true,
   },
 };
 
@@ -134,7 +171,7 @@ function getNetworkConfig(networkName) {
 
 // Helper function to check if network is testnet
 function isTestnet(networkName) {
-  const testnets = ['goerli', 'sepolia', 'mumbai', 'bscTestnet', 'hardhat'];
+  const testnets = ['goerli', 'sepolia', 'mumbai', 'bscTestnet', 'hederaTestnet', 'hederaPreviewnet', 'hardhat'];
   return testnets.includes(networkName);
 }
 
@@ -150,6 +187,9 @@ function getExplorerUrl(networkName) {
     bscTestnet: 'https://testnet.bscscan.com',
     arbitrum: 'https://arbiscan.io',
     optimism: 'https://optimistic.etherscan.io',
+    hedera: 'https://hashscan.io/mainnet',
+    hederaTestnet: 'https://hashscan.io/testnet',
+    hederaPreviewnet: 'https://hashscan.io/previewnet',
   };
   return explorers[networkName] || '';
 }
