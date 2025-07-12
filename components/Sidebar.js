@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useContext } from 'react'
 import logo from '../assets/amazon_logo.png'
 import logoFull from '../assets/amazon_logo_full.png'
@@ -6,7 +8,7 @@ import { FaBox } from 'react-icons/fa'
 import { BsFillBookmarkFill } from 'react-icons/bs'
 import { BsFillPersonFill } from 'react-icons/bs'
 import { AmazonContext } from '../context/AmazonContext'
-import { ConnectButton } from 'web3uikit'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { AiOutlineHistory } from 'react-icons/ai'
 import Link from 'next/link'
 
@@ -28,9 +30,7 @@ const Sidebar = () => {
   }
 
   const {
-    isAuthenticated,
-    buyTokens,
-    getBalance,
+    isConnected,
     nickname,
     setNickname,
     username,
@@ -40,11 +40,11 @@ const Sidebar = () => {
   return (
     <div className={styles.container}>
       <div className={styles.profile}>
-        {isAuthenticated && (
+        {isConnected && (
           <>
             <div className={styles.profilePicContainer}>
               <Image
-                src={`https://avatars.dicebear.com/api/pixel-art/${username}.svg`}
+                src={`https://avatars.dicebear.com/api/pixel-art/${username || 'default'}.svg`}
                 alt='profile'
                 className={styles.profilePic}
                 height={100}
@@ -71,7 +71,7 @@ const Sidebar = () => {
               </>
             ) : (
               <div>
-                <div className={styles.welcome}>Wecome {username}</div>
+                <div className={styles.welcome}>Welcome {username}</div>
               </div>
             )}
           </>

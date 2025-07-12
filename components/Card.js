@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useContext } from 'react'
 import { FaCoins } from 'react-icons/fa'
 import { AmazonContext } from '../context/AmazonContext'

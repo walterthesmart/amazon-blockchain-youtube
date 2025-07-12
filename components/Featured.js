@@ -1,5 +1,6 @@
-import React, { useState, useContext } from 'react'
-import { AmazonContext } from '../context/AmazonContext'
+'use client'
+
+import React, { useState } from 'react'
 
 const Featured = () => {
   const [cardColor] = useState([

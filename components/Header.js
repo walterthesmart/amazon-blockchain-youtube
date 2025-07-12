@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useContext } from 'react'
 import { CgMenuGridO } from 'react-icons/cg'
 import logo from '../assets/amazon_logo_full.png'
@@ -25,7 +27,7 @@ const Header = () => {
     coins: `ml-[10px]`,
   }
 
-  const { balance, buyTokens, getBalance } = useContext(AmazonContext)
+  const { balance, buyTokens } = useContext(AmazonContext)
   const { openModal, isModalOpen, closeModal } = useModal()
   return (
     <ModalProvider>

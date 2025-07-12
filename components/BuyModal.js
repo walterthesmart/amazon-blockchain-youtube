@@ -1,6 +1,10 @@
-import React, { useContext, useEffect } from 'react'
+'use client'
+
+import React, { useContext, useEffect, useState } from 'react'
 import { IoIosClose } from 'react-icons/io'
+import { SiHedera } from 'react-icons/si'
 import { AmazonContext } from '../context/AmazonContext'
+import { HederaContext } from '../context/HederaContext'
 import { HashLoader } from 'react-spinners'
 import Link from 'next/link'
 
@@ -25,19 +29,27 @@ const BuyModal = ({ close, buyTokens }) => {
     tokenAmount,
     setTokenAmount,
     isLoading,
-    setIsLoading,
-    etherscanLink,
-    setEtherscanLink,
+    transactionLink,
+    setTransactionLink,
+    error,
+    successMessage,
+    clearMessages,
+    networkPricing,
+    currentNetwork,
+    isHederaNetwork,
+    contractAddress,
+    buyTokens,
   } = useContext(AmazonContext)
-  useEffect(() => {
-    calculatePrice()
-  }, [tokenAmount])
 
-  const calculatePrice = () => {
-    const price = parseFloat(tokenAmount * 0.0001)
-    price = price.toFixed(4)
-    setAmountDue(price)
-  }
+  const {
+    isNativeHederaAvailable,
+    mintTokensHedera,
+    hederaAccountId,
+    isLoadingHedera,
+  } = useContext(HederaContext)
+
+  const [useNativeHedera, setUseNativeHedera] = useState(false)
+  const [hederaError, setHederaError] = useState(null)
 
   return (
     <div className={styles.container}>
@@ -55,7 +67,8 @@ const BuyModal = ({ close, buyTokens }) => {
                 close()
                 setAmountDue('')
                 setTokenAmount('')
-                setEtherscanLink('')
+                setTransactionLink('')
+                clearMessages()
               }}
               fontSize={50}
               className='cursor-pointer'
@@ -63,41 +76,130 @@ const BuyModal = ({ close, buyTokens }) => {
           </div>
           <div className={styles.title}>Buy More Amazon Coins Here!</div>
           <div className={styles.content}>
-            Select how many tokens you would like to buy.
+            Select how many tokens you would like to buy on {currentNetwork?.name || 'this network'}.
           </div>
+
+          {/* Network and contract info */}
+          {currentNetwork && (
+            <div className="text-center mb-4 p-2 bg-gray-100 rounded text-sm">
+              <div className="font-medium">
+                {isHederaNetwork ? '🟣 Hedera Network' : '🟢 Ethereum Network'}
+              </div>
+              <div className="text-gray-600">
+                Network: {currentNetwork.name} | Currency: {networkPricing?.currency || 'ETH'}
+              </div>
+              {!contractAddress && (
+                <div className="text-red-600 mt-1">
+                  ⚠️ Contract not deployed on this network
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Hedera transaction method selection */}
+          {isHederaNetwork && isNativeHederaAvailable() && (
+            <div className="mb-4 p-3 bg-purple-50 border border-purple-200 rounded">
+              <div className="flex items-center gap-3 mb-2">
+                <SiHedera className="text-purple-600" />
+                <span className="font-medium text-purple-800">Transaction Method</span>
+              </div>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="transactionMethod"
+                    checked={!useNativeHedera}
+                    onChange={() => setUseNativeHedera(false)}
+                    className="text-purple-600"
+                  />
+                  <span className="text-sm">EVM Compatible (via wallet)</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="transactionMethod"
+                    checked={useNativeHedera}
+                    onChange={() => setUseNativeHedera(true)}
+                    className="text-purple-600"
+                  />
+                  <span className="text-sm">Native Hedera SDK</span>
+                </label>
+              </div>
+              {useNativeHedera && (
+                <div className="mt-2 text-xs text-purple-700">
+                  Using native Hedera SDK for optimal performance and lower fees.
+                  Account ID: {hederaAccountId || 'Not available'}
+                </div>
+              )}
+            </div>
+          )}
+
+          {(error || hederaError) && (
+            <div className="text-red-500 text-center mb-4 p-2 bg-red-100 rounded">
+              {error || hederaError}
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="text-green-500 text-center mb-4 p-2 bg-green-100 rounded">
+              {successMessage}
+            </div>
+          )}
+
           <div className={styles.input}>
             <input
-              type='text'
+              type='number'
               placeholder='Amount...'
               className={styles.inputBox}
               onChange={e => setTokenAmount(e.target.value)}
               value={tokenAmount}
+              min="0"
+              step="1"
+              disabled={!contractAddress}
             />
           </div>
           <div className={styles.price}>
             Total Due:{' '}
-            {tokenAmount && tokenAmount > 0 ? amountDue + 'ETH' : '0 ETH'}
+            {tokenAmount && tokenAmount > 0 && networkPricing
+              ? `${amountDue} ${networkPricing.currency}`
+              : `0 ${networkPricing?.currency || 'ETH'}`}
           </div>
           <button
             className={styles.buyBtn}
-            disabled={!tokenAmount || tokenAmount < 0}
-            onClick={() => {
-              setIsLoading(true)
-              buyTokens()
+            disabled={
+              !tokenAmount ||
+              tokenAmount <= 0 ||
+              isLoading ||
+              isLoadingHedera ||
+              (!contractAddress && !useNativeHedera)
+            }
+            onClick={async () => {
+              if (useNativeHedera && isNativeHederaAvailable()) {
+                try {
+                  setHederaError(null)
+                  const amount = BigInt(tokenAmount) * BigInt(10 ** 18)
+                  const hbarAmount = parseFloat(tokenAmount) * 0.1
+                  await mintTokensHedera(amount, hbarAmount)
+                } catch (err) {
+                  setHederaError(err.message)
+                }
+              } else {
+                buyTokens()
+              }
             }}
           >
-            Buy
+            {(isLoading || isLoadingHedera) ? 'Processing...' :
+             !contractAddress && !useNativeHedera ? 'Contract Not Available' :
+             useNativeHedera ? 'Buy with Hedera SDK' : 'Buy with Wallet'}
           </button>
-          {etherscanLink && (
+          {transactionLink && (
             <>
               <div className={styles.success}>
-                Transaction Sucessful! Check out your receipt for your
+                Transaction Successful! Check out your receipt for your
                 transaction below!
               </div>
-              <Link href={`${etherscanLink}`} className={styles.etherscan}>
-                <a className={styles.etherscan} target='_blank'>
-                  Transaction Receipt
-                </a>
+              <Link href={transactionLink} target='_blank' className={styles.etherscan}>
+                Transaction Receipt
               </Link>
             </>
           )}

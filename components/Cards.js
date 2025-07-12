@@ -1,4 +1,6 @@
-import React, { useState, useContext, useEffect } from 'react'
+'use client'
+
+import React, { useContext } from 'react'
 import Card from './Card'
 import { AmazonContext } from '../context/AmazonContext'
 
@@ -16,9 +18,7 @@ const Cards = () => {
       <div className={styles.cards}>
         <div className={styles.cards}>
           {assets.map(item => {
-            let asset = item.attributes
-
-            return <Card key={item.id} item={item.attributes} />
+            return <Card key={item.id} item={item} />
           })}
         </div>
       </div>
