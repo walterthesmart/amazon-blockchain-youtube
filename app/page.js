@@ -4,6 +4,7 @@ import { useContext, useState } from 'react'
 import Main from '../components/Main'
 import Sidebar from '../components/Sidebar'
 import HederaIntegration from '../components/HederaIntegration'
+import ContractStatus from '../components/ContractStatus'
 import { NetworkStatus, NetworkSwitcher } from '../components/LoadingSpinner'
 import { AmazonContext } from '../context/AmazonContext'
 
@@ -25,13 +26,20 @@ export default function Home() {
   } = useContext(AmazonContext)
 
   const [showNetworkSwitcher, setShowNetworkSwitcher] = useState(false)
+  const [showContractStatus, setShowContractStatus] = useState(false)
 
   return (
     <>
       <div className={styles.networkStatus}>
         <NetworkStatus chain={chain} isConnected={isConnected} />
         {isConnected && (
-          <div className="flex justify-end pr-4">
+          <div className="flex justify-end pr-4 gap-2">
+            <button
+              onClick={() => setShowContractStatus(!showContractStatus)}
+              className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+            >
+              Contract Status
+            </button>
             <button
               onClick={() => setShowNetworkSwitcher(!showNetworkSwitcher)}
               className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
@@ -52,6 +60,25 @@ export default function Home() {
             }}
             supportedNetworks={getSupportedNetworks()}
           />
+        </div>
+      )}
+
+      {showContractStatus && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+              <h2 className="text-xl font-bold">Contract Status & Verification</h2>
+              <button
+                onClick={() => setShowContractStatus(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4">
+              <ContractStatus />
+            </div>
+          </div>
         </div>
       )}
 
