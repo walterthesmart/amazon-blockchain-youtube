@@ -3,6 +3,7 @@ require("dotenv").config();
 
 const { networks } = require("./config/networks");
 const { validatePrivateKeyConfig, displayWalletStatus } = require("./config/wallet-config");
+const { types } = require("hardhat/config");
 
 // Custom tasks
 task("accounts", "Prints the list of accounts", async (_, hre) => {
@@ -22,7 +23,7 @@ task("balance", "Prints an account's balance")
   });
 
 task("deploy-amazon-coin", "Deploy AmazonCoin contract")
-  .addOptionalParam("verify", "Verify contract after deployment", false)
+  .addOptionalParam("verify", "Verify contract after deployment", false, types.boolean)
   .setAction(async () => {
     const deployScript = require("./scripts/deploy/01-deploy-amazon-coin");
     await deployScript();
@@ -52,13 +53,13 @@ task("wallet-status", "Display wallet configuration status")
   });
 
 task("validate-network", "Validate private key configuration for a network")
-  .addParam("network", "Network name to validate")
+  .addParam("targetNetwork", "Network name to validate")
   .setAction(async (taskArgs) => {
-    const isValid = validatePrivateKeyConfig(taskArgs.network);
+    const isValid = validatePrivateKeyConfig(taskArgs.targetNetwork);
     if (isValid) {
-      console.log(`✅ Private key configuration is valid for network: ${taskArgs.network}`);
+      console.log(`✅ Private key configuration is valid for network: ${taskArgs.targetNetwork}`);
     } else {
-      console.log(`❌ Private key configuration is invalid for network: ${taskArgs.network}`);
+      console.log(`❌ Private key configuration is invalid for network: ${taskArgs.targetNetwork}`);
       process.exit(1);
     }
   });
@@ -66,7 +67,7 @@ task("validate-network", "Validate private key configuration for a network")
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: {
-    version: "0.8.19",
+    version: "0.8.20",
     settings: {
       optimizer: {
         enabled: true,

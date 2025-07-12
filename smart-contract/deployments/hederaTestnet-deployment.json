@@ -1,0 +1,38 @@
+{
+  "network": "hederaTestnet",
+  "chainId": 296,
+  "contractAddress": "0xd995b5323b1Ec4194D1cb2470a9b6383263CE196",
+  "deployerAddress": "0x9aF836cCbA4BaA530894B12760208ccAF548c63e",
+  "transactionHash": "0x5249918fe34b9ec60bdf752e7caa17f375a8bcb9d6e6aa8b449995e048e85df7",
+  "blockNumber": 22145774,
+  "gasUsed": "1490614",
+  "gasPrice": "500000000000",
+  "timestamp": "2025-07-12T16:05:16.625Z",
+  "hederaSpecific": {
+    "explorerUrl": "https://hashscan.io/testnet/contract/0xd995b5323b1Ec4194D1cb2470a9b6383263CE196",
+    "transactionUrl": "https://hashscan.io/testnet/transaction/0x5249918fe34b9ec60bdf752e7caa17f375a8bcb9d6e6aa8b449995e048e85df7",
+    "networkType": "testnet"
+  },
+  "contractInfo": {
+    "name": "Amazon Coin",
+    "symbol": "AC",
+    "decimals": "18",
+    "totalSupply": "100000000000000000000000000",
+    "maxSupply": "1000000000000000000000000000",
+    "exchangeRate": "100000000000000",
+    "mintingEnabled": true,
+    "owner": "0x9aF836cCbA4BaA530894B12760208ccAF548c63e"
+  },
+  "burnOperations": [
+    {
+      "timestamp": "2025-07-12T16:37:25.764Z",
+      "transactionHash": "0xedf6fa1f04bd10999f7302c8ab08097f0a64411039c88999c551701330c08bd6",
+      "blockNumber": 22146740,
+      "gasUsed": "36200",
+      "tokensBurned": "50000750000000050000000000",
+      "newBalance": "50000750000000050000000000",
+      "newTotalSupply": "50000750000000050000000000",
+      "burnerAddress": "0x9aF836cCbA4BaA530894B12760208ccAF548c63e"
+    }
+  ]
+}

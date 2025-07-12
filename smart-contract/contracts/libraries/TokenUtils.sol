@@ -1,15 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
-
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+pragma solidity ^0.8.20;
 
 /**
  * @title TokenUtils
  * @dev Utility library for token-related calculations and validations
  * @notice This library provides common utility functions for token operations
+ * @notice Uses built-in Solidity 0.8+ overflow protection instead of SafeMath
  */
 library TokenUtils {
-    using SafeMath for uint256;
 
     /**
      * @dev Calculate the percentage of a total amount
@@ -23,7 +21,7 @@ library TokenUtils {
         returns (uint256) 
     {
         require(percentage <= 10000, "TokenUtils: Percentage cannot exceed 100%");
-        return amount.mul(percentage).div(10000);
+        return (amount * percentage) / 10000;
     }
 
     /**
@@ -38,7 +36,7 @@ library TokenUtils {
         returns (uint256) 
     {
         require(tokenAmount > 0, "TokenUtils: Token amount must be greater than zero");
-        return etherAmount.mul(10**18).div(tokenAmount);
+        return (etherAmount * 10**18) / tokenAmount;
     }
 
     /**
@@ -53,7 +51,7 @@ library TokenUtils {
         returns (uint256) 
     {
         require(exchangeRate > 0, "TokenUtils: Exchange rate must be greater than zero");
-        return etherAmount.mul(10**18).div(exchangeRate);
+        return (etherAmount * 10**18) / exchangeRate;
     }
 
     /**
@@ -67,7 +65,7 @@ library TokenUtils {
         pure 
         returns (uint256) 
     {
-        return tokenAmount.mul(exchangeRate).div(10**18);
+        return (tokenAmount * exchangeRate) / 10**18;
     }
 
     /**
@@ -106,7 +104,7 @@ library TokenUtils {
         pure 
         returns (bool) 
     {
-        return current.add(addition) > maximum;
+        return current + addition > maximum;
     }
 
     /**
@@ -121,6 +119,6 @@ library TokenUtils {
         returns (uint256) 
     {
         require(current <= maximum, "TokenUtils: Current exceeds maximum");
-        return maximum.sub(current);
+        return maximum - current;
     }
 }

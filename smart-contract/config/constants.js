@@ -7,8 +7,8 @@ const TOKEN_CONFIG = {
   name: "Amazon Coin",
   symbol: "AC",
   decimals: 18,
-  maxSupply: ethers.utils.parseEther("1000000000"), // 1 billion tokens
-  initialExchangeRate: ethers.utils.parseEther("0.0001"), // 0.0001 ETH per token
+  maxSupply: ethers.parseEther("1000000000"), // 1 billion tokens
+  initialExchangeRate: ethers.parseEther("0.0001"), // 0.0001 ETH per token
   initialSupplyPercentage: 10, // 10% of max supply minted initially
 };
 
@@ -17,63 +17,63 @@ const NETWORK_CONFIG = {
   // Mainnet
   1: {
     name: "mainnet",
-    gasPrice: ethers.utils.parseUnits("20", "gwei"),
+    gasPrice: ethers.parseUnits("20", "gwei"),
     gasLimit: 8000000,
     confirmations: 2,
   },
   // Goerli Testnet
   5: {
     name: "goerli",
-    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: ethers.parseUnits("10", "gwei"),
     gasLimit: 8000000,
     confirmations: 1,
   },
   // Sepolia Testnet
   11155111: {
     name: "sepolia",
-    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: ethers.parseUnits("10", "gwei"),
     gasLimit: 8000000,
     confirmations: 1,
   },
   // Polygon Mainnet
   137: {
     name: "polygon",
-    gasPrice: ethers.utils.parseUnits("30", "gwei"),
+    gasPrice: ethers.parseUnits("30", "gwei"),
     gasLimit: 8000000,
     confirmations: 2,
   },
   // Polygon Mumbai Testnet
   80001: {
     name: "mumbai",
-    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: ethers.parseUnits("10", "gwei"),
     gasLimit: 8000000,
     confirmations: 1,
   },
   // Hedera Mainnet
   295: {
     name: "hedera",
-    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: ethers.parseUnits("50", "gwei"), // Higher gas price for Hedera
     gasLimit: 8000000,
     confirmations: 1,
   },
   // Hedera Testnet
   296: {
     name: "hederaTestnet",
-    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: ethers.parseUnits("50", "gwei"), // Higher gas price for Hedera
     gasLimit: 8000000,
     confirmations: 1,
   },
   // Hedera Previewnet
   297: {
     name: "hederaPreviewnet",
-    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: ethers.parseUnits("50", "gwei"), // Higher gas price for Hedera
     gasLimit: 8000000,
     confirmations: 1,
   },
   // Local Hardhat Network
   31337: {
     name: "hardhat",
-    gasPrice: ethers.utils.parseUnits("1", "gwei"),
+    gasPrice: ethers.parseUnits("1", "gwei"),
     gasLimit: 8000000,
     confirmations: 1,
   },
@@ -136,18 +136,18 @@ const TESTING_CONFIG = {
   
   // Test token amounts
   amounts: {
-    small: ethers.utils.parseEther("100"),
-    medium: ethers.utils.parseEther("1000"),
-    large: ethers.utils.parseEther("10000"),
-    maxPurchase: ethers.utils.parseEther("100000"),
+    small: ethers.parseEther("100"),
+    medium: ethers.parseEther("1000"),
+    large: ethers.parseEther("10000"),
+    maxPurchase: ethers.parseEther("100000"),
   },
-  
+
   // Test Ether amounts
   etherAmounts: {
-    small: ethers.utils.parseEther("0.01"),
-    medium: ethers.utils.parseEther("0.1"),
-    large: ethers.utils.parseEther("1"),
-    veryLarge: ethers.utils.parseEther("10"),
+    small: ethers.parseEther("0.01"),
+    medium: ethers.parseEther("0.1"),
+    large: ethers.parseEther("1"),
+    veryLarge: ethers.parseEther("10"),
   },
   
   // Gas limits for testing
@@ -172,8 +172,8 @@ const SECURITY_CONFIG = {
   // Rate limiting (if implemented)
   rateLimiting: {
     enabled: false,
-    maxPurchasePerBlock: ethers.utils.parseEther("10000"),
-    maxPurchasePerDay: ethers.utils.parseEther("100000"),
+    maxPurchasePerBlock: ethers.parseEther("10000"),
+    maxPurchasePerDay: ethers.parseEther("100000"),
   },
   
   // Whitelist/Blacklist (if implemented)

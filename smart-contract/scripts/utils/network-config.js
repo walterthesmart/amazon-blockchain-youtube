@@ -13,7 +13,7 @@ const NETWORK_CONFIGS = {
     currency: "ETH",
     explorerUrl: "https://etherscan.io",
     isTestnet: false,
-    gasPrice: ethers.utils.parseUnits("20", "gwei"),
+    gasPrice: ethers.parseUnits("20", "gwei"),
     confirmations: 2,
   },
   polygon: {
@@ -22,7 +22,7 @@ const NETWORK_CONFIGS = {
     currency: "MATIC",
     explorerUrl: "https://polygonscan.com",
     isTestnet: false,
-    gasPrice: ethers.utils.parseUnits("30", "gwei"),
+    gasPrice: ethers.parseUnits("30", "gwei"),
     confirmations: 2,
   },
   bsc: {
@@ -31,7 +31,7 @@ const NETWORK_CONFIGS = {
     currency: "BNB",
     explorerUrl: "https://bscscan.com",
     isTestnet: false,
-    gasPrice: ethers.utils.parseUnits("5", "gwei"),
+    gasPrice: ethers.parseUnits("5", "gwei"),
     confirmations: 2,
   },
   arbitrum: {
@@ -40,7 +40,7 @@ const NETWORK_CONFIGS = {
     currency: "ETH",
     explorerUrl: "https://arbiscan.io",
     isTestnet: false,
-    gasPrice: ethers.utils.parseUnits("1", "gwei"),
+    gasPrice: ethers.parseUnits("1", "gwei"),
     confirmations: 1,
   },
   optimism: {
@@ -49,7 +49,7 @@ const NETWORK_CONFIGS = {
     currency: "ETH",
     explorerUrl: "https://optimistic.etherscan.io",
     isTestnet: false,
-    gasPrice: ethers.utils.parseUnits("1", "gwei"),
+    gasPrice: ethers.parseUnits("1", "gwei"),
     confirmations: 1,
   },
 
@@ -60,7 +60,7 @@ const NETWORK_CONFIGS = {
     currency: "HBAR",
     explorerUrl: "https://hashscan.io/mainnet",
     isTestnet: false,
-    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: ethers.parseUnits("50", "gwei"), // Higher gas price for Hedera
     confirmations: 1,
   },
 
@@ -71,7 +71,7 @@ const NETWORK_CONFIGS = {
     currency: "GoerliETH",
     explorerUrl: "https://goerli.etherscan.io",
     isTestnet: true,
-    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: ethers.parseUnits("10", "gwei"),
     confirmations: 1,
   },
   sepolia: {
@@ -80,7 +80,7 @@ const NETWORK_CONFIGS = {
     currency: "SepoliaETH",
     explorerUrl: "https://sepolia.etherscan.io",
     isTestnet: true,
-    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: ethers.parseUnits("10", "gwei"),
     confirmations: 1,
   },
   mumbai: {
@@ -89,7 +89,7 @@ const NETWORK_CONFIGS = {
     currency: "MATIC",
     explorerUrl: "https://mumbai.polygonscan.com",
     isTestnet: true,
-    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: ethers.parseUnits("10", "gwei"),
     confirmations: 1,
   },
   bscTestnet: {
@@ -98,7 +98,7 @@ const NETWORK_CONFIGS = {
     currency: "tBNB",
     explorerUrl: "https://testnet.bscscan.com",
     isTestnet: true,
-    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: ethers.parseUnits("10", "gwei"),
     confirmations: 1,
   },
 
@@ -108,7 +108,7 @@ const NETWORK_CONFIGS = {
     currency: "HBAR",
     explorerUrl: "https://hashscan.io/testnet",
     isTestnet: true,
-    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: ethers.parseUnits("50", "gwei"), // Higher gas price for Hedera
     confirmations: 1,
   },
   hederaPreviewnet: {
@@ -117,7 +117,7 @@ const NETWORK_CONFIGS = {
     currency: "HBAR",
     explorerUrl: "https://hashscan.io/previewnet",
     isTestnet: true,
-    gasPrice: ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: ethers.parseUnits("50", "gwei"), // Higher gas price for Hedera
     confirmations: 1,
   },
 
@@ -128,7 +128,7 @@ const NETWORK_CONFIGS = {
     currency: "ETH",
     explorerUrl: "",
     isTestnet: true,
-    gasPrice: ethers.utils.parseUnits("1", "gwei"),
+    gasPrice: ethers.parseUnits("1", "gwei"),
     confirmations: 1,
   },
 };
@@ -210,7 +210,7 @@ function formatAddress(address, length = 6) {
  * @returns {string} Formatted amount
  */
 function formatTokenAmount(amount, decimals = 18, precision = 4) {
-  const formatted = ethers.utils.formatUnits(amount, decimals);
+  const formatted = ethers.formatUnits(amount, decimals);
   const num = parseFloat(formatted);
   return num.toFixed(precision).replace(/\.?0+$/, "");
 }
@@ -222,7 +222,7 @@ function formatTokenAmount(amount, decimals = 18, precision = 4) {
  * @returns {string} Formatted amount
  */
 function formatEther(amount, precision = 4) {
-  const formatted = ethers.utils.formatEther(amount);
+  const formatted = ethers.formatEther(amount);
   const num = parseFloat(formatted);
   return num.toFixed(precision).replace(/\.?0+$/, "");
 }

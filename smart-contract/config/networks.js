@@ -128,7 +128,7 @@ const networks = {
     url: process.env.HEDERA_RPC_URL || "https://mainnet.hashio.io/api",
     chainId: 295,
     gas: 8000000,
-    gasPrice: 10000000000, // 10 gwei (Hedera uses higher gas prices)
+    gasPrice: 500000000000, // 500 gwei (Hedera requires very high gas prices)
     accounts: getAccountsForNetwork('hedera'),
     confirmations: 1,
     timeoutBlocks: 200,
@@ -140,7 +140,7 @@ const networks = {
     url: process.env.HEDERA_TESTNET_RPC_URL || "https://testnet.hashio.io/api",
     chainId: 296,
     gas: 8000000,
-    gasPrice: 10000000000, // 10 gwei
+    gasPrice: 500000000000, // 500 gwei (Hedera requires very high gas prices)
     accounts: getAccountsForNetwork('hederaTestnet'),
     confirmations: 1,
     timeoutBlocks: 200,
@@ -152,7 +152,7 @@ const networks = {
     url: process.env.HEDERA_PREVIEWNET_RPC_URL || "https://previewnet.hashio.io/api",
     chainId: 297,
     gas: 8000000,
-    gasPrice: 10000000000, // 10 gwei
+    gasPrice: 500000000000, // 500 gwei (Hedera requires very high gas prices)
     accounts: getAccountsForNetwork('hederaPreviewnet'),
     confirmations: 1,
     timeoutBlocks: 200,

@@ -1,4 +1,4 @@
-const { network } = require("hardhat");
+const { ethers, network } = require("hardhat");
 const { 
   validatePrivateKeyConfig, 
   displayWalletStatus, 
@@ -95,20 +95,20 @@ async function validateDeployment() {
   console.log("\n💰 Checking Account Balance...");
   try {
     const [deployer] = await ethers.getSigners();
-    const balance = await deployer.getBalance();
-    const balanceEth = ethers.utils.formatEther(balance);
+    const balance = await ethers.provider.getBalance(deployer.address);
+    const balanceEth = ethers.formatEther(balance);
     
     console.log("👤 Deployer Address:", deployer.address);
     console.log("💰 Balance:", balanceEth, isHederaNetwork(network.name) ? "HBAR" : "ETH");
     
     // Minimum balance requirements
-    const minBalance = isHederaNetwork(network.name) ? 
-      ethers.utils.parseEther("5") :   // 5 HBAR for Hedera
-      ethers.utils.parseEther("0.1");  // 0.1 ETH for EVM networks
-    
-    if (balance.lt(minBalance)) {
+    const minBalance = isHederaNetwork(network.name) ?
+      ethers.parseEther("5") :   // 5 HBAR for Hedera
+      ethers.parseEther("0.1");  // 0.1 ETH for EVM networks
+
+    if (balance < minBalance) {
       const currency = isHederaNetwork(network.name) ? "HBAR" : "ETH";
-      const minRequired = ethers.utils.formatEther(minBalance);
+      const minRequired = ethers.formatEther(minBalance);
       issues.push(`Insufficient balance. Need at least ${minRequired} ${currency}, have ${balanceEth} ${currency}`);
       validationPassed = false;
     } else {

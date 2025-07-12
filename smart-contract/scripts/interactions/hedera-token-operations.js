@@ -33,11 +33,21 @@ async function main() {
   // Get signer
   const [signer] = await ethers.getSigners();
   console.log("👤 Signer address:", signer.address);
-  console.log("💰 Signer balance:", ethers.utils.formatEther(await signer.getBalance()), "HBAR");
+  console.log("💰 Signer balance:", ethers.formatEther(await ethers.provider.getBalance(signer.address)), "HBAR");
 
   // Connect to deployed contract
   const AmazonCoin = await ethers.getContractFactory("AmazonCoin");
   const amazonCoin = AmazonCoin.attach(contractAddress);
+
+  // Verify contract is properly attached
+  console.log("🔍 Contract attached, verifying connection...");
+  try {
+    const name = await amazonCoin.name();
+    console.log("✅ Contract connection verified, name:", name);
+  } catch (error) {
+    console.log("❌ Contract connection failed:", error.message);
+    return;
+  }
 
   // Verify signer is the owner
   const owner = await amazonCoin.owner();
@@ -50,13 +60,13 @@ async function main() {
   console.log("\n📊 Current Contract State:");
   console.log("   Name:", await amazonCoin.name());
   console.log("   Symbol:", await amazonCoin.symbol());
-  console.log("   Total Supply:", ethers.utils.formatEther(await amazonCoin.totalSupply()), "AC");
-  console.log("   Max Supply:", ethers.utils.formatEther(await amazonCoin.MAX_SUPPLY()), "AC");
-  console.log("   Remaining Supply:", ethers.utils.formatEther(await amazonCoin.getRemainingSupply()), "AC");
-  console.log("   Exchange Rate:", ethers.utils.formatEther(await amazonCoin.exchangeRate()), "HBAR per token");
+  console.log("   Total Supply:", ethers.formatEther(await amazonCoin.totalSupply()), "AC");
+  console.log("   Max Supply:", ethers.formatEther(await amazonCoin.MAX_SUPPLY()), "AC");
+  console.log("   Remaining Supply:", ethers.formatEther(await amazonCoin.getRemainingSupply()), "AC");
+  console.log("   Exchange Rate:", ethers.formatEther(await amazonCoin.exchangeRate()), "HBAR per token");
   console.log("   Minting Enabled:", await amazonCoin.mintingEnabled());
   console.log("   Contract Paused:", await amazonCoin.paused());
-  console.log("   Total HBAR Collected:", ethers.utils.formatEther(await amazonCoin.totalEtherCollected()), "HBAR");
+  console.log("   Total HBAR Collected:", ethers.formatEther(await amazonCoin.totalEtherCollected()), "HBAR");
 
   // Hedera-specific operations menu
   console.log("\n🛠️  Available Hedera Operations:");
@@ -89,40 +99,43 @@ async function demonstratePurchase(amazonCoin, signer) {
   console.log("\n💰 Demonstrating Token Purchase with HBAR...");
   
   try {
-    const tokenAmount = ethers.utils.parseEther("100"); // 100 tokens
-    const hbarCost = await amazonCoin.calculateEtherCost(tokenAmount);
-    
-    console.log(`   Purchasing ${ethers.utils.formatEther(tokenAmount)} AC tokens`);
-    console.log(`   Cost: ${ethers.utils.formatEther(hbarCost)} HBAR`);
-    
+    // Let's try using the receive function instead by sending HBAR directly
+    console.log("   🔄 Trying direct HBAR transfer to purchase tokens...");
+
+    const hbarAmount = ethers.parseEther("0.1"); // Send 0.1 HBAR directly
+    console.log(`   Sending ${ethers.formatEther(hbarAmount)} HBAR directly to contract`);
+
+    // Check balance before
+    const balanceBefore = await amazonCoin.balanceOf(signer.address);
+    console.log(`   Token balance before: ${ethers.formatEther(balanceBefore)} AC`);
+
     // Check if user has enough HBAR
-    const balance = await signer.getBalance();
-    if (balance.lt(hbarCost.add(ethers.utils.parseEther("1")))) { // Keep 1 HBAR for gas
-      console.log("   ⚠️  Insufficient HBAR balance for purchase");
+    const balance = await ethers.provider.getBalance(signer.address);
+    if (balance < (hbarAmount + ethers.parseEther("1"))) { // Keep 1 HBAR for gas
+      console.log("   ⚠️  Insufficient HBAR balance for direct transfer");
       return;
     }
-    
-    // Estimate gas for Hedera
-    const gasEstimate = await amazonCoin.estimateGas.purchaseTokens(tokenAmount, { value: hbarCost });
-    console.log(`   ⛽ Estimated gas: ${gasEstimate.toString()}`);
-    
-    // Execute purchase with Hedera-optimized gas settings
-    const tx = await amazonCoin.purchaseTokens(tokenAmount, {
-      value: hbarCost,
-      gasLimit: gasEstimate.mul(120).div(100), // 20% buffer
-      gasPrice: ethers.utils.parseUnits("10", "gwei"), // Hedera gas price
+
+    // Send HBAR directly to contract (will trigger receive function)
+    const tx = await signer.sendTransaction({
+      to: await amazonCoin.getAddress(),
+      value: hbarAmount,
+      gasPrice: ethers.parseUnits("500", "gwei"), // Hedera requires higher gas price
     });
     
     console.log(`   📝 Transaction hash: ${tx.hash}`);
     console.log("   ⏳ Waiting for confirmation...");
-    
+
     const receipt = await tx.wait();
-    console.log(`   ✅ Purchase successful! Block: ${receipt.blockNumber}`);
+    console.log(`   ✅ Direct HBAR transfer successful! Block: ${receipt.blockNumber}`);
     console.log(`   ⛽ Gas used: ${receipt.gasUsed.toString()}`);
-    
+
     // Check new balance
-    const newBalance = await amazonCoin.balanceOf(signer.address);
-    console.log(`   💎 New token balance: ${ethers.utils.formatEther(newBalance)} AC`);
+    const balanceAfter = await amazonCoin.balanceOf(signer.address);
+    const tokensReceived = balanceAfter - balanceBefore;
+    console.log(`   💎 Token balance before: ${ethers.formatEther(balanceBefore)} AC`);
+    console.log(`   💎 Token balance after: ${ethers.formatEther(balanceAfter)} AC`);
+    console.log(`   🎉 Tokens received: ${ethers.formatEther(tokensReceived)} AC`);
     
   } catch (error) {
     console.log(`   ❌ Purchase failed: ${error.message}`);
@@ -136,27 +149,27 @@ async function demonstrateOwnerOperations(amazonCoin, signer) {
   console.log("\n👑 Demonstrating Owner Operations...");
   
   try {
-    // Example: Mint tokens to a test address
-    const testAddress = "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6"; // Replace with actual address
-    const mintAmount = ethers.utils.parseEther("500"); // 500 tokens
-    
-    console.log(`   Minting ${ethers.utils.formatEther(mintAmount)} AC to ${testAddress}`);
+    // Example: Mint tokens to a test address (use the signer's address for testing)
+    const testAddress = signer.address; // Use signer's address for testing
+    const mintAmount = ethers.parseEther("500"); // 500 tokens
+
+    console.log(`   Minting ${ethers.formatEther(mintAmount)} AC to ${testAddress}`);
     
     // Check remaining supply
     const remainingSupply = await amazonCoin.getRemainingSupply();
-    if (mintAmount.gt(remainingSupply)) {
+    if (mintAmount > remainingSupply) {
       console.log("   ⚠️  Mint amount exceeds remaining supply");
       return;
     }
     
     // Estimate gas
-    const gasEstimate = await amazonCoin.estimateGas.mint(testAddress, mintAmount);
+    const gasEstimate = await amazonCoin.mint.estimateGas(testAddress, mintAmount);
     console.log(`   ⛽ Estimated gas: ${gasEstimate.toString()}`);
     
     // Execute mint with Hedera settings
     const tx = await amazonCoin.mint(testAddress, mintAmount, {
-      gasLimit: gasEstimate.mul(120).div(100),
-      gasPrice: ethers.utils.parseUnits("10", "gwei"),
+      gasLimit: gasEstimate * 120n / 100n,
+      gasPrice: ethers.parseUnits("500", "gwei"), // Hedera requires higher gas price
     });
     
     console.log(`   📝 Transaction hash: ${tx.hash}`);

@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+// SafeMath is no longer needed in Solidity 0.8+ as it has built-in overflow protection
 
 /**
  * @title AmazonCoin
@@ -23,7 +23,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
  * - Emergency withdrawal functionality for contract owner
  */
 contract AmazonCoin is ERC20, ERC20Burnable, ERC20Pausable, Ownable, ReentrancyGuard {
-    using SafeMath for uint256;
+    // Using built-in Solidity 0.8+ overflow protection instead of SafeMath
 
     // Constants
     uint256 public constant MAX_SUPPLY = 1_000_000_000 * 10**18; // 1 billion tokens max
@@ -45,12 +45,12 @@ contract AmazonCoin is ERC20, ERC20Burnable, ERC20Pausable, Ownable, ReentrancyG
      * @dev Constructor that initializes the AmazonCoin token
      * @notice Sets up the token with initial parameters and mints initial supply to owner
      */
-    constructor() ERC20("Amazon Coin", "AC") {
+    constructor() ERC20("Amazon Coin", "AC") Ownable(msg.sender) {
         exchangeRate = INITIAL_EXCHANGE_RATE;
         mintingEnabled = true;
 
         // Mint initial supply to contract deployer (10% of max supply)
-        uint256 initialSupply = MAX_SUPPLY.div(10);
+        uint256 initialSupply = MAX_SUPPLY / 10;
         _mint(msg.sender, initialSupply);
 
         emit TokensPurchased(msg.sender, initialSupply, 0);
@@ -70,7 +70,7 @@ contract AmazonCoin is ERC20, ERC20Burnable, ERC20Pausable, Ownable, ReentrancyG
      */
     modifier withinSupplyLimit(uint256 amount) {
         require(
-            totalSupply().add(amount) <= MAX_SUPPLY,
+            totalSupply() + amount <= MAX_SUPPLY,
             "AmazonCoin: Minting would exceed maximum supply"
         );
         _;
@@ -92,10 +92,10 @@ contract AmazonCoin is ERC20, ERC20Burnable, ERC20Pausable, Ownable, ReentrancyG
     {
         require(amount > 0, "AmazonCoin: Amount must be greater than zero");
 
-        uint256 requiredEther = amount.mul(exchangeRate).div(10**18);
+        uint256 requiredEther = (amount * exchangeRate) / 10**18;
         require(msg.value == requiredEther, "AmazonCoin: Incorrect Ether amount sent");
 
-        totalEtherCollected = totalEtherCollected.add(msg.value);
+        totalEtherCollected = totalEtherCollected + msg.value;
         _mint(msg.sender, amount);
 
         emit TokensPurchased(msg.sender, amount, msg.value);
@@ -169,7 +169,7 @@ contract AmazonCoin is ERC20, ERC20Burnable, ERC20Pausable, Ownable, ReentrancyG
         require(amount > 0, "AmazonCoin: Amount must be greater than zero");
         require(amount <= address(this).balance, "AmazonCoin: Insufficient contract balance");
 
-        totalEtherCollected = totalEtherCollected.sub(amount);
+        totalEtherCollected = totalEtherCollected - amount;
 
         (bool success, ) = payable(owner()).call{value: amount}("");
         require(success, "AmazonCoin: Ether transfer failed");
@@ -206,7 +206,7 @@ contract AmazonCoin is ERC20, ERC20Burnable, ERC20Pausable, Ownable, ReentrancyG
      * @return The number of tokens that can still be minted
      */
     function getRemainingSupply() external view returns (uint256) {
-        return MAX_SUPPLY.sub(totalSupply());
+        return MAX_SUPPLY - totalSupply();
     }
 
     /**
@@ -215,18 +215,19 @@ contract AmazonCoin is ERC20, ERC20Burnable, ERC20Pausable, Ownable, ReentrancyG
      * @return The Ether cost in wei
      */
     function calculateEtherCost(uint256 tokenAmount) external view returns (uint256) {
-        return tokenAmount.mul(exchangeRate).div(10**18);
+        return (tokenAmount * exchangeRate) / 10**18;
     }
 
     /**
      * @dev Override required by Solidity for multiple inheritance
+     * In OpenZeppelin v5, _beforeTokenTransfer was replaced with _update
      */
-    function _beforeTokenTransfer(
+    function _update(
         address from,
         address to,
         uint256 amount
     ) internal override(ERC20, ERC20Pausable) {
-        super._beforeTokenTransfer(from, to, amount);
+        super._update(from, to, amount);
     }
 
     /**
@@ -238,13 +239,13 @@ contract AmazonCoin is ERC20, ERC20Burnable, ERC20Pausable, Ownable, ReentrancyG
         require(mintingEnabled, "AmazonCoin: Minting is currently disabled");
         require(!paused(), "AmazonCoin: Contract is paused");
 
-        uint256 tokenAmount = msg.value.mul(10**18).div(exchangeRate);
+        uint256 tokenAmount = (msg.value * 10**18) / exchangeRate;
         require(
-            totalSupply().add(tokenAmount) <= MAX_SUPPLY,
+            totalSupply() + tokenAmount <= MAX_SUPPLY,
             "AmazonCoin: Purchase would exceed maximum supply"
         );
 
-        totalEtherCollected = totalEtherCollected.add(msg.value);
+        totalEtherCollected = totalEtherCollected + msg.value;
         _mint(msg.sender, tokenAmount);
 
         emit TokensPurchased(msg.sender, tokenAmount, msg.value);

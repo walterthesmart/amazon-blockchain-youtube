@@ -1,0 +1,20 @@
+{
+  "network": "hardhat",
+  "chainId": 31337,
+  "contractAddress": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "deployerAddress": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "transactionHash": "0x6a3606deb7ea2899048355a42ca7f0f028e4ba6d18cd796f7981a8d81f02b743",
+  "blockNumber": 1,
+  "gasUsed": "1491042",
+  "timestamp": "2025-07-12T15:57:16.600Z",
+  "contractInfo": {
+    "name": "Amazon Coin",
+    "symbol": "AC",
+    "decimals": "18",
+    "totalSupply": "100000000000000000000000000",
+    "maxSupply": "1000000000000000000000000000",
+    "exchangeRate": "100000000000000",
+    "mintingEnabled": true,
+    "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+  }
+}

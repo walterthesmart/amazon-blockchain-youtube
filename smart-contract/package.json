@@ -38,9 +38,12 @@
     "hedera:interact": "hardhat run scripts/interactions/hedera-token-operations.js --network hederaTestnet",
     "hedera:interact-mainnet": "hardhat run scripts/interactions/hedera-token-operations.js --network hedera",
     "hedera:interact-previewnet": "hardhat run scripts/interactions/hedera-token-operations.js --network hederaPreviewnet",
+    "hedera:burn": "hardhat run scripts/interactions/burn-tokens.js --network hederaTestnet",
+    "hedera:burn-mainnet": "hardhat run scripts/interactions/burn-tokens.js --network hedera",
+    "hedera:burn-previewnet": "hardhat run scripts/interactions/burn-tokens.js --network hederaPreviewnet",
     "validate": "hardhat run scripts/utils/validate-deployment.js",
     "wallet-status": "hardhat wallet-status",
-    "validate-network": "hardhat validate-network"
+    "validate-network": "hardhat validate-network --target-network"
   },
   "keywords": [
     "hedera",
@@ -69,6 +72,7 @@
     "clsx": "^2.1.1",
     "crypto-browserify": "^3.12.1",
     "date-fns": "^2.30.0",
+    "dotenv": "^17.2.0",
     "ethers": "^6.8.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",
