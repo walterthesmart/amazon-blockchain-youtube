@@ -13,8 +13,9 @@ import {
   evmAddressToAccountId,
   getCurrentNetworkConfig,
   HEDERA_NETWORKS,
+  ContractFunctionParameters,
+  Hbar,
 } from '../lib/hedera-sdk'
-import { ContractFunctionParameters, Hbar } from '@hashgraph/sdk'
 import { isHederaNetwork, getContractAddress } from '../lib/constants'
 
 export const HederaContext = createContext()
